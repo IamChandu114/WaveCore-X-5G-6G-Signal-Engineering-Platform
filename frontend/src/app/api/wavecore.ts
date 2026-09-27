@@ -92,7 +92,8 @@ export type ExplanationMap = Record<
   }
 >;
 
-const API_BASE = import.meta.env.VITE_WAVECORE_API_URL ?? "";
+const rawApiBase = import.meta.env.VITE_WAVECORE_API_URL ?? "";
+const API_BASE = rawApiBase.replace(/\/+$/, "");
 
 const modulationMap: Record<FrontendModScheme, string> = {
   BPSK: "BPSK",
@@ -136,7 +137,8 @@ export async function runSimulation(params: SimulationParams): Promise<Simulatio
 }
 
 export function openLiveSimulation(params: SimulationParams): WebSocket {
-  const explicitBase = import.meta.env.VITE_WAVECORE_WS_URL as string | undefined;
+  const explicitBaseRaw = import.meta.env.VITE_WAVECORE_WS_URL as string | undefined;
+  const explicitBase = explicitBaseRaw ? explicitBaseRaw.replace(/\/+$/, "") : undefined;
   const defaultBase = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}`;
   const socket = new WebSocket(`${explicitBase ?? defaultBase}/api/v1/simulations/live`);
   socket.addEventListener("open", () => {
