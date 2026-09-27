@@ -153,7 +153,7 @@ function safeExternalUrl(value: string | undefined) {
 function Index() {
   const isDev = import.meta.env.DEV;
   const configuredUrl = import.meta.env["VITE_SIMULATOR_URL"];
-  const activeSimulatorUrl = configuredUrl ? safeExternalUrl(configuredUrl) : (isDev ? "http://localhost:5174" : undefined);
+  const activeSimulatorUrl = configuredUrl ? safeExternalUrl(configuredUrl) : (isDev ? "http://localhost:5174" : "https://wave-core-x-5-g-6-g-signal-engineer.vercel.app/");
   const githubUrl = safeExternalUrl(import.meta.env["VITE_GITHUB_URL"]);
   const demoUrl = safeExternalUrl(import.meta.env["VITE_DEMO_VIDEO_URL"]);
   const [selected, setSelected] = useState<Stage>(stages[0] ?? { id: "source", short: "01", name: "Message & framing", purpose: "Frame the message for transmission.", input: "UTF-8 text", output: "Framed bitstream", status: "Described core link", assumption: "Valid text input.", limitation: "CRC detects errors but does not correct them." });
@@ -185,7 +185,7 @@ function Index() {
   };
 
   const simulatorAction = (size: "sm" | "lg") => activeSimulatorUrl ? (
-    <Button variant={size === "sm" ? "outline" : "default"} size={size} asChild><a href={activeSimulatorUrl} target="_blank" rel="noopener noreferrer">Launch simulator <ArrowRight /></a></Button>
+    <Button variant={size === "sm" ? "outline" : "default"} size={size} asChild><a href={activeSimulatorUrl} target="_blank" rel="noopener noreferrer">Launch Live Simulator <ArrowUpRight /></a></Button>
   ) : (
     <Button variant={size === "sm" ? "outline" : "default"} size={size} disabled className="opacity-50 cursor-not-allowed">Simulator deployment pending</Button>
   );
