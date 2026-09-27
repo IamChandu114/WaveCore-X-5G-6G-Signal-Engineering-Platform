@@ -1,0 +1,48 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Node
+node_modules/
+.pnpm-store/
+.npm/
+*.log
+
+# Build outputs
+dist/
+build/
+.output/
+.tanstack/
+.wrangler/
+
+# Vercel
+.vercel/
+
+# Website generated files
+website/.lovable/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Coverage
+.coverage
+htmlcov/
