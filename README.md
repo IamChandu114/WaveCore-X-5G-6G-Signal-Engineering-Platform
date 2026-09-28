@@ -1,3 +1,6 @@
+<div align="center">
+  <img src="https://raw.githubusercontent.com/IamChandu114/WaveCore-X-5G-6G-Signal-Engineering-Platform/main/website/public/wavecore-simulator.png" alt="WaveCore X Simulator" width="800"/>
+  
   # WaveCore X
   **Baseband Wireless Communications Simulator & Signal Engineering Platform**
 
@@ -10,9 +13,6 @@
 </div>
 
 <br />
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/IamChandu114/WaveCore-X-5G-6G-Signal-Engineering-Platform/main/website/public/wavecore-simulator.png" alt="WaveCore X Simulator" width="800"/>
   
 ## 📡 Engineering Overview
 
