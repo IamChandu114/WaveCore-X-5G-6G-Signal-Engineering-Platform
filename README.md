@@ -1,6 +1,3 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/IamChandu114/WaveCore-X-5G-6G-Signal-Engineering-Platform/main/website/public/wavecore-simulator.png" alt="WaveCore X Simulator" width="800"/>
-
   # WaveCore X
   **Baseband Wireless Communications Simulator & Signal Engineering Platform**
 
@@ -14,6 +11,9 @@
 
 <br />
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/IamChandu114/WaveCore-X-5G-6G-Signal-Engineering-Platform/main/website/public/wavecore-simulator.png" alt="WaveCore X Simulator" width="800"/>
+  
 ## 📡 Engineering Overview
 
 WaveCore X is a deterministic, complex-baseband wireless communication simulator engineered for exploring the complete signal processing chain. Unlike abstract theoretical models that skip implementation details, WaveCore X explicitly wires the core link from message framing to receiver recovery. 
