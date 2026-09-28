@@ -184,10 +184,8 @@ function Index() {
     tabRefs.current[next]?.focus();
   };
 
-  const simulatorAction = (size: "sm" | "lg") => activeSimulatorUrl ? (
-    <Button variant={size === "sm" ? "outline" : "default"} size={size} asChild><a href={activeSimulatorUrl} target="_blank" rel="noopener noreferrer">Launch Live Simulator <ArrowUpRight /></a></Button>
-  ) : (
-    <Button variant={size === "sm" ? "outline" : "default"} size={size} disabled className="opacity-50 cursor-not-allowed">Simulator deployment pending</Button>
+  const simulatorAction = (size: "sm" | "lg") => (
+    <Button variant={size === "sm" ? "outline" : "default"} size={size} asChild><a href="https://wave-core-x-5-g-6-g-signal-engineer.vercel.app/" target="_blank" rel="noopener noreferrer">LIVE SIMULATOR <ArrowUpRight /></a></Button>
   );
 
   return (
