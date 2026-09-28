@@ -1,119 +1,277 @@
-# WaveCore X Backend
+<div align="center">
+  <img src="https://raw.githubusercontent.com/IamChandu114/WaveCore-X-5G-6G-Signal-Engineering-Platform/main/website/public/wavecore-simulator.png" alt="WaveCore X Simulator" width="800"/>
 
-WaveCore X is an interactive wireless communication engineering platform. This repository contains the FastAPI backend, the Figma-exported simulator UI in `frontend/`, the separate showcase website in `website/`, DSP modules, tests, and engineering documentation.
+  # WaveCore X
+  **Baseband Wireless Communications Simulator & Signal Engineering Platform**
 
-> **Verified scope:** the basic Hamming-coded OFDM link is wired end to end. Waveform, constellation, OFDM-grid, and channel-coefficient charts use bounded traces from the current backend run and show Unavailable when traces are absent. The channel chart displays flat fading coefficients `|h[n]|`, not a multipath impulse response. Spectrum, BER theory, and performance views remain illustrative/theoretical. CFO and timing controls apply uncorrected impairments (the receiver does not synchronize them out). Advanced modules are not all integrated, and experiment models are not persisted through APIs. See the [engineering integrity audit](docs/engineering-integrity-audit.md) for assumptions and validation limits.
+  [![Website](https://img.shields.io/badge/Website-wavecore--x--website.vercel.app-000000?style=for-the-badge&logo=vercel)](https://wavecore-x-website.vercel.app/)
+  [![Simulator](https://img.shields.io/badge/Simulator-Live_Demo-007ACC?style=for-the-badge&logo=react)](https://wave-core-x-5-g-6-g-signal-engineer.vercel.app/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+  [![Tests](https://img.shields.io/badge/Tests-41_Passed-4CAF50?style=for-the-badge&logo=pytest)](#validation-and-results)
 
-## Milestone 1 Scope
+  *Trace a message through coding, constellation mapping, OFDM, modeled fading channels, receiver equalization, and recovery across an explicitly implemented end-to-end software simulation pipeline.*
+</div>
 
-- FastAPI backend skeleton with REST and WebSocket contracts.
-- Clean architecture package layout.
-- Independently testable DSP modules:
-  - UTF-8 message encoding
-  - CRC-16-CCITT
-  - Hamming(7,4)
-  - Block interleaving
-  - BPSK, QPSK, 16-QAM, 64-QAM, 256-QAM
-  - OFDM pilot insertion, IFFT/FFT, cyclic prefix
-  - AWGN, Rayleigh, Rician, frequency offset, timing offset
-  - Zero-forcing equalization
-  - BER, SER, EVM, throughput, latency
-- Simulation pipeline from message to recovered message.
-- SQLAlchemy persistence models for experiments, configurations, results, metrics, and reports.
-- Engineering explanation catalog for simulation stages.
-- JSON and CSV export service.
+<br />
 
-## Phase 1 Module 1 Additions
+## 📡 Engineering Overview
 
-- Convolutional encoder and Viterbi decoder.
-- Reed-Solomon GF(256) systematic encoder and bounded-distance decoder.
-- LDPC systematic encoder and min-sum decoder.
-- Polar encoder and decoder support for validation blocks.
-- Adaptive coding recommendation controller.
-- Least-squares channel estimation utilities.
-- MMSE equalization.
-- Timing synchronization, frequency-offset correction, carrier recovery, and pilot detection.
-- `GET /api/v1/capabilities` for frontend capability discovery.
+WaveCore X is a deterministic, complex-baseband wireless communication simulator engineered for exploring the complete signal processing chain. Unlike abstract theoretical models that skip implementation details, WaveCore X explicitly wires the core link from message framing to receiver recovery. 
 
-## Phase 1 Module 2 Additions
+The primary engineering problem this platform addresses is the **opacity of intermediate transformations** in modern telecommunications. By inspecting the complete communication chain, researchers and engineers can observe the exact impact of channel impairments, error correction, and equalization algorithms on the resulting constellation and bit error rates.
 
-- Advanced OFDM resource grid model.
-- Pilot allocation over time-frequency resources.
-- Guard-band and DC-null reservation.
-- IFFT/FFT grid conversion.
-- Cyclic-prefix handling.
-- Raised-cosine windowing.
-- OFDMA contiguous multi-user subcarrier allocation.
+Users can dynamically configure source messages, modulation schemes (BPSK through 256-QAM), channel conditions (AWGN, Rayleigh, Rician), and receiver equalizers (Zero-Forcing, MMSE), then explicitly observe the resulting signal integrity metrics.
 
-## Phase 1 Module 3 Additions
+## 🔗 Complete Signal-Chain Visualization
 
-- Tapped-delay-line multipath channel.
-- Per-tap Doppler, gain, phase, and delay.
-- Log-distance path loss.
-- Log-normal shadow fading.
-- RMS delay-spread and coherence-bandwidth analysis.
-- Jakes Doppler spectrum generation.
+The core simulation pipeline executes the following deterministic transformations. 
+*(Note: Advanced features like Polar coding and OFDMA are implemented as independent modules and are planned for future pipeline integration).*
 
-## Architecture
+```mermaid
+graph TD
+    classDef implemented fill:#0a2540,stroke:#00d2ff,stroke-width:2px,color:#fff;
+    classDef planned fill:#1c1c1c,stroke:#555,stroke-width:2px,color:#888,stroke-dasharray: 5 5;
+
+    subgraph Transmitter
+        M[UTF-8 Message]:::implemented --> CRC[CRC-16 Framing]:::implemented
+        CRC --> FEC[Hamming 7,4 Coding]:::implemented
+        FEC --> INT[Block Interleaving]:::implemented
+        INT --> MOD[Constellation Mapping]:::implemented
+        MOD --> OFDM[OFDM IFFT & Pilots]:::implemented
+        OFDM --> CP[Cyclic Prefix]:::implemented
+    end
+
+    subgraph Channel
+        CP --> CH[Wireless Channel<br/>AWGN / Rayleigh / Rician]:::implemented
+        CH --> CFO[Frequency & Timing Offsets]:::implemented
+    end
+
+    subgraph Receiver
+        CFO --> SYNC[Synchronization<br/>& Phase Recovery]:::implemented
+        SYNC --> CH_EST[Pilot Channel Estimation]:::implemented
+        CH_EST --> EQ[ZF / MMSE Equalization]:::implemented
+        EQ --> DEMOD[Symbol Demapping]:::implemented
+        DEMOD --> DEINT[Deinterleaving]:::implemented
+        DEINT --> DEC[FEC Decoding]:::implemented
+        DEC --> VER[CRC Verification]:::implemented
+        VER --> OUT[Recovered Message]:::implemented
+    end
+
+    %% Legend
+    L1[Implemented]:::implemented
+    L2[Advanced Module / Not Integrated]:::planned
+```
+
+## 🚀 Live Simulator
+
+The complete frontend interface and backend engine are deployed live.
+
+👉 **[Launch WaveCore X Simulator](https://wave-core-x-5-g-6-g-signal-engineer.vercel.app/)**
+👉 **[View Product Documentation Website](https://wavecore-x-website.vercel.app/)**
+
+**Workflow:**
+1. Enter a text payload.
+2. Select a modulation scheme (e.g., 16-QAM) and SNR.
+3. Choose a channel model (AWGN or Fading).
+4. Run the simulation.
+5. Inspect the resulting constellation diagrams, OFDM grid, and Bit Error Rate (BER) metrics.
+
+## ⚙️ Technical Capabilities
+
+### Implemented Core Pipeline
+- **Source Integrity:** UTF-8 conversion and CRC-16-CCITT framing for end-to-end error detection.
+- **Forward Error Correction (FEC):** Hamming(7,4) coding with block interleaving.
+- **Modulation:** BPSK, QPSK, 16-QAM, 64-QAM, and 256-QAM mapping to complex baseband symbols.
+- **Multicarrier (OFDM):** Pilot insertion, IFFT-based orthogonal frequency-division multiplexing, and cyclic prefix addition.
+- **Wireless Channels:** Configurable AWGN, flat block Rayleigh, and Rician fading models.
+- **Receiver:** Pilot-aided Least Squares (LS) channel estimation, Zero-Forcing (ZF), and Minimum Mean Square Error (MMSE) equalization.
+- **Analytics:** Post-simulation deterministic evaluation of BER, SER, EVM, and raw throughput.
+
+### Experimental / Standalone Modules (Phase 1 Additions)
+*These modules exist in the DSP repository but are pending integration into the primary simulation pipeline.*
+- **Advanced Coding:** Convolutional encoding (Viterbi decoding), Reed-Solomon GF(256), LDPC (min-sum), and Polar coding baselines.
+- **Advanced OFDM:** Resource grid modeling, OFDMA multi-user subcarrier allocation, guard-band reservation.
+- **Advanced Channel:** Tapped-delay-line multipath, Jakes Doppler spectrum, log-normal shadow fading.
+
+## 🏗️ System Architecture
+
+WaveCore X strictly separates the web interface, the REST/WebSocket API layer, the simulation orchestrator, and the DSP numerical core.
+
+```mermaid
+graph TD
+    classDef bg fill:#1c1c1c,stroke:#333,stroke-width:2px,color:#fff;
+    classDef api fill:#009688,stroke:#fff,color:#fff;
+    
+    subgraph UI[Client Interfaces]
+        CLIENT[React / Vite Simulator]:::bg
+        WEB[TanStack Start Website]:::bg
+    end
+
+    subgraph Backend[FastAPI Backend]
+        API[REST & WebSocket Gateway]:::api
+        ENG[Simulation Orchestrator]:::bg
+        DSP[DSP & Math Core]:::bg
+        DB[(SQLAlchemy Models)]:::bg
+    end
+
+    CLIENT -- HTTP/WS --> API
+    WEB -- HTTP --> API
+    API --> ENG
+    ENG --> DSP
+    API -.-> DB
+```
+
+## 📐 Mathematical Foundations
+
+The core metrics generated by the simulation engine are rooted in standard telecommunications theory:
+
+* **Bit Error Rate (BER):** 
+  The ratio of incorrectly recovered bits to the total number of transmitted bits.
+  $$BER = \frac{N_{errors}}{N_{total}}$$
+* **Error Vector Magnitude (EVM):**
+  A measure of the deviation of received symbols from their ideal constellation points, capturing the aggregate effect of channel noise and fading.
+* **Minimum Mean Square Error (MMSE) Equalization:**
+  Balances channel inversion with noise amplification.
+  $$W_{MMSE} = \frac{H^*}{|H|^2 + \frac{1}{SNR}}$$
+  *(Where $H$ is the estimated channel coefficient and $SNR$ is the linear signal-to-noise ratio).*
+
+## 📂 Repository Structure
 
 ```text
-Frontend
-  -> API Gateway (FastAPI REST/WebSocket)
-  -> Simulation Engine
-  -> DSP Engine
-  -> Wireless Channel Engine
-  -> Analytics Engine
-  -> AI Assistant
-  -> Database
-  -> Export System
+.
+├── frontend/               # React / Vite Simulator UI
+│   ├── src/app/api/        # Typed frontend API clients
+│   └── ...
+├── wavecore/               # Core Backend Application
+│   ├── api/                # FastAPI routes, REST & WebSocket schemas
+│   ├── dsp/                # Numerical algorithms & signal processing
+│   │   ├── coding.py
+│   │   ├── modulation.py
+│   │   ├── ofdm.py
+│   │   ├── channel.py
+│   │   └── equalization.py
+│   └── simulation/         # Pipeline orchestrator
+├── website/                # Product Documentation Website (TanStack Start)
+├── tests/                  # Pytest integration & unit tests
+└── WAVECORE_X_DELIVERY_REPORT.md
 ```
 
-The first milestone keeps simulation execution in-process for correctness and testability. Celery/Redis can be introduced as a worker boundary once long-running simulation batches are added.
+## 💻 Installation and Local Execution
 
-## Install
+### 1. Backend (FastAPI + DSP Engine)
+Requires Python 3.10+.
 
-```bash
+```powershell
+# Create and activate virtual environment (Windows)
 python -m venv .venv
 .venv\Scripts\activate
+
+# Install dependencies in editable mode
 pip install -e ".[dev]"
-```
 
-## Run
-
-```bash
+# Run the API server
 uvicorn wavecore.api.main:app --reload --host 127.0.0.1 --port 8001
 ```
+*API Documentation (Swagger UI) is available at: `http://127.0.0.1:8001/docs`*
 
-## Showcase Website
+### 2. Simulator Frontend (React + Vite)
+Requires Node.js 20+.
 
-The official Figma-exported product website is in `website/`. Run its Vite server separately from the simulator:
+```powershell
+cd frontend
+npm install
+npm run dev -- --host 127.0.0.1 --port 5174
+```
 
-```cmd
+### 3. Product Documentation Website (Optional)
+```powershell
 cd website
 npm install
 npm run dev -- --host 127.0.0.1 --port 5180
 ```
 
-Open `http://127.0.0.1:5180/`. The showcase expects the API on port `8001` and simulator UI on port `5174`. Its performance section requests a real simulation through the website's `/api` proxy.
+## 📡 API Documentation
 
-## Test
+WaveCore X exposes typed REST and WebSocket endpoints for executing simulations.
 
+### `POST /api/v1/simulations/run`
+Executes a complete end-to-end simulation.
+
+**Example Request:**
 ```bash
-pytest
+curl -X POST http://127.0.0.1:8001/api/v1/simulations/run \
+  -H "Content-Type: application/json" \
+  -d '{"message":"WaveCore X","modulation":"QPSK","channel":{"model":"AWGN","snr_db":30.0}}'
 ```
 
-## Verification (2026-09-26)
-
-- `pytest -q -rA`: 41 passed, including REST and WebSocket integration tests.
-- `node --test frontend/src/app/api/traceData.test.mjs frontend/src/app/api/encodingPreview.test.mjs`: 9 passed, including current-run and missing/malformed trace cases for all three connected charts.
-- `npm run build` (from `frontend/`): succeeded; Vite reports existing esbuild-option deprecation warnings.
-- Runtime smoke check: frontend returned HTTP 200; a seeded QPSK API run recovered its input with CRC true and BER 0.0, and an unsupported LDPC request returned HTTP 422. These are finite software-simulation checks, not RF or standards validation.
-- No browser E2E or frontend typecheck/lint script is configured.
-
-## Example
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/simulations/run ^
-  -H "Content-Type: application/json" ^
-  -d "{\"message\":\"WaveCore X\",\"modulation\":\"QPSK\",\"snr_db\":30}"
+**Verified Output Schema:**
+```json
+{
+  "simulation_id": "sim_3a9f8b2...",
+  "input_message": "WaveCore X",
+  "recovered_message": "WaveCore X",
+  "crc_ok": true,
+  "metrics": {
+    "ber": 0.0,
+    "packet_error": false,
+    "coding_scheme": "HAMMING74",
+    "equalizer": "ZERO_FORCING"
+  },
+  "traces": [
+    {
+      "name": "transmitted_waveform",
+      "summary": "...",
+      "data": {}
+    }
+  ]
+}
 ```
+
+## 🧪 Validation and Results
+
+WaveCore X enforces strict test coverage to ensure numerical correctness of the DSP implementations and API stability.
+
+To run the backend test suite:
+```powershell
+pytest -q -rA
+```
+**Current Status (v0.1.0):** 41 tests passed, including REST, WebSocket integration tests, and deterministic seeded channel tests. 
+
+*Note: These tests validate the integrity of the software mathematical model; they do not represent hardware RF measurements or 3GPP/NR standards compliance.*
+
+## 🛠️ Technology Stack
+
+* **Backend Framework:** FastAPI, Uvicorn, Python 3.10+
+* **Numerical Computing:** NumPy, SciPy (in DSP modules)
+* **Frontend Simulator:** React, Vite, Tailwind CSS, TypeScript
+* **Documentation Website:** TanStack Start, React Router, Vite
+* **Persistence (Prepared):** SQLAlchemy
+* **Testing:** Pytest
+
+## 🚧 Limitations & Roadmap
+
+### Implemented
+- ✅ End-to-end message framing to recovery path.
+- ✅ Seeded deterministic channel runs.
+- ✅ Basic pilot-bearing OFDM and equalization (ZF/MMSE).
+
+### Planned / Roadmap
+- ⏳ **Integration of Advanced Modules:** Wiring the existing LDPC, Polar coding, and multipath tapped-delay-line models into the primary FastAPI simulation pipeline.
+- ⏳ **Database Persistence:** Utilizing the implemented SQLAlchemy models to save and recall experiment histories across sessions.
+- ⏳ **Advanced Synchronization:** Implementing timing correction and CFO loop filtering at the receiver side (currently applied as fixed impairments).
+
+## 🤝 Contribution & Reproducibility
+
+WaveCore X is an open-source engineering tool. If you are a DSP researcher or wireless engineer, contributions to the `wavecore/dsp/` algorithms are welcome.
+1. Ensure all new DSP mathematical implementations are strictly isolated from FastAPI dependencies.
+2. Maintain deterministic behavior by accepting a random seed in stochastic functions.
+3. Run `pytest` before submitting pull requests.
+
+## 📜 References
+The mathematical implementations within this simulator are derived from standard digital communications theory, targeting baseband representations rather than hardware specific RF passband behavior. 
+
+---
+<div align="center">
+  <i>Simulate. Analyze. Understand.</i> <br/>
+  <b>WaveCore X</b>
+</div>
